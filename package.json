@@ -4,7 +4,8 @@
   "description": "ProBot - For Bedfords Only",
   "main": "app.js",
   "dependencies": {
-    "discord.js": "^11.2.1"
+    "discord.js": "^11.2.1",
+    "express": "^4.16.2"
   },
   "devDependencies": {},
   "scripts": {
@@ -13,5 +14,4 @@
   },
   "author": "",
   "license": "ISC"
-
 }
