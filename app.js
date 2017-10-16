@@ -14,7 +14,7 @@ const config = require("./config.json");
 var express = require('express')
 var app = express();
 
-app.set('port', (process.env.PORT || 5000))
+app.set('port', 50003)
 app.use(express.static(__dirname + '/public'))
 
 app.listen(app.get('port'), function() {
