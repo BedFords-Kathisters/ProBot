@@ -8,7 +8,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "nf start",
+    "bot": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
