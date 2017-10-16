@@ -21,10 +21,6 @@ app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'))
 })
 
-app.listen(process.env.PORT || 3000 ,function(){
-    console.log("up and running on port "+process.env.PORT);
-});
-
 client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
   console.log(`ProBot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
