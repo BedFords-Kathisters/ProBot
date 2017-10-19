@@ -158,6 +158,72 @@ client.on("message", function(message){
   // }
   }
   
+  if(command === "reddit_hot") {
+    // Get imdb score for args[1]
+   // const m = await message.channel.send("Ping?");
+   // m.edit(`Pong! Latency is ${m.createdTimestamp - message.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
+  // try
+  // {
+	   var url = 'https://www.reddit.com/r/' + args.join(" ") + '/hot/.json?limit=3';
+		
+		var http = require('https');
+		
+		http.get(url, function(res){
+			var body = '';
+
+			res.on('data', function(chunk){
+				body += chunk;
+			});
+
+			res.on('end', function(){
+				var fbResponse = JSON.parse(body);
+				
+				if(fbResponse == null || fbResponse.data == null ||fbResponse.data.children == 0)
+					message.channel.send("Mathe onomata subredit kathister!");
+				else
+				{
+					for (var i = 0; i < fbResponse.data.children.length; i++) {
+    
+						var reddit = fbResponse.data.children[i].data;
+						
+						if(reddit.stickied == 'true')
+							continue;
+						
+						var embed = {embed: {
+							color: 3447003,
+							title: reddit.title,
+							url: "http://www.reddit.com" + reddit.permalink,
+							thumbnail: {
+								url:reddit.thumbnail
+							}
+							/*,fields: [
+							  {
+								name: "Score",
+								value: reddit.score
+							  }
+							],
+							timestamp: new Date(),
+							footer: {
+							  icon_url: client.user.avatarURL,
+							  text: "© ProBot"
+							}*/
+						}};
+
+						message.channel.send(embed);
+					};
+				}
+			});
+
+		}).on('error', function(e){
+		  console.log("Got an error: ", e);
+		});
+   //}
+   //catch(e)
+  // {
+	//   message.channel.send("Error kathister: ", e.message);
+  // }
+  }
+  
   /*if(command === "say") {
     // makes the bot say something and delete the message. As an example, it's open to anyone to use. 
     // To get the "message" itself we join the `args` back into a string with spaces: 
