@@ -186,7 +186,7 @@ client.on("message", function(message){
     
 						var reddit = fbResponse.data.children[i].data;
 						
-						if(reddit.stickied == 'true')
+						if(reddit.stickied == 'true' || reddit.stickied)
 							continue;
 						
 						/*var embed = {embed: {
