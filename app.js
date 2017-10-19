@@ -189,14 +189,14 @@ client.on("message", function(message){
 						if(reddit.stickied == 'true')
 							continue;
 						
-						var embed = {embed: {
+						/*var embed = {embed: {
 							color: 3447003,
 							title: reddit.title,
 							url: "http://www.reddit.com" + reddit.permalink,
 							thumbnail: {
 								url:reddit.thumbnail
 							}
-							/*,fields: [
+							,fields: [
 							  {
 								name: "Score",
 								value: reddit.score
@@ -206,10 +206,10 @@ client.on("message", function(message){
 							footer: {
 							  icon_url: client.user.avatarURL,
 							  text: "© ProBot"
-							}*/
-						}};
+							}
+						}};*/
 
-						message.channel.send(embed);
+						message.channel.send("http://www.reddit.com" + reddit.permalink);
 					};
 				}
 			});
