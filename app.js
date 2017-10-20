@@ -13,6 +13,7 @@ const config = require("./config.json");
 
 var express = require('express')
 var app = express();
+var http = require('https');
 
 // set the port of our application
 // process.env.PORT lets the port be set by Heroku
@@ -38,6 +39,16 @@ app.listen(port, () => {
 setInterval(() => {
   http.get('https://hidden-fjord-17967.herokuapp.com/');
 }, 900000);
+
+
+var conString = "postgres://cbwklgbnnsanzw:b3240ff3ce3a1fa8308dfb69f1cd926dc4706df601873f5809fb669ec22b4867@ec2-54-235-250-15.compute-1.amazonaws.com:5432/d6d0kjgl9rqcdk?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
+
+var pg = require('pg');
+//var pool = new pg.Pool(conString);
+
+
+//var pgclient = new pg.Client(conString);
+
 
 client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
@@ -90,7 +101,7 @@ client.on("message", function(message){
 		
 		const query = args.join(" ");
 		
-		var http = require('https');
+		//var http = require('https');
 		
 		http.get(url + query, function(res){
 			var body = '';
@@ -129,7 +140,7 @@ client.on("message", function(message){
 		
 		const query = args.join(" ");
 		
-		var http = require('https');
+		//var http = require('https');
 		
 		http.get(url + query, function(res){
 			var body = '';
@@ -158,6 +169,78 @@ client.on("message", function(message){
   // }
   }
   
+  if(command === "test") {
+	  
+//	pool.connect();
+	
+	var sql = "select utsr.user, utsr.rating, utsr.tvshowid from public.usertvshowratings as utsr inner join public.tvshows ts on ts.id = utsr.tvshowid where ts.name = '" + args.join(" ") + "'"; 
+	
+	pg.connect(conString, function (err, client, done) {
+	  if (err) {
+		return console.error('error fetching client from pool', err)
+	  }
+	  client.query(sql,  function (err, result) {
+		done()
+		
+		var msg = "";
+		
+		if (err) {
+		  return console.error('error happened during query', err)
+		}
+		
+		for (var i = 0; i < result.rows.length; i++) {
+			
+			var row = result.rows[i];
+				
+			msg = msg + "\n" + row.user + ": " + row.rating;
+		}
+		
+		message.channel.send(msg);
+	  });
+	});
+	
+	/*pool.connect(conString, function (err, client, done) {
+	  if (err) {
+		return console.error('error fetching client from pool', err)
+	  }
+	  client.query(sql,  function (err, result) {
+		done()
+		
+		var msg = "";
+		
+		if (err) {
+		  return console.error('error happened during query', err)
+		}
+		
+		for (var i = 0; i < result.rows.length; i++) {
+			
+			var row = result.rows[i];
+				
+			console.log(row);	
+			
+			msg = msg + "\n" + row.user + ": " + row.rating;
+		}
+		
+		message.channel.send(msg);
+	  });
+	  
+	  pool.end();*/
+	
+	/*var query = pool.query(sql);
+	
+	var msg = "";
+	
+	query.on('row', function(row) {
+		msg = msg + "\n" + row.user + ": " + row.rating;
+	});
+
+	query.on('end', function() {
+		message.channel.send(msg);
+		pgclient.end();
+	});*/
+	  
+  }
+  
   if(command === "reddit_hot") {
     // Get imdb score for args[1]
    // const m = await message.channel.send("Ping?");
@@ -166,7 +249,7 @@ client.on("message", function(message){
   // {
 	   var url = 'https://www.reddit.com/r/' + args.join(" ") + '/hot/.json?limit=3';
 		
-		var http = require('https');
+		//var http = require('https');
 		
 		http.get(url, function(res){
 			var body = '';
