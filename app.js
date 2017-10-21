@@ -97,31 +97,14 @@ client.on("message", function(message){
    // m.edit(`Pong! Latency is ${m.createdTimestamp - message.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
   // try
   // {
-	   var url = 'https://api.themoviedb.org/3/search/tv?api_key=0390a02f871031ab64e5716275c2d061&query=';
+	   const query = args.join(" ");
 		
-		const query = args.join(" ");
-		
-		//var http = require('https');
-		
-		http.get(url + query, function(res){
-			var body = '';
-
-			res.on('data', function(chunk){
-				body += chunk;
-			});
-
-			res.on('end', function(){
-				var fbResponse = JSON.parse(body);
-				console.log("Got a response: ", fbResponse[0]);
-				
-				if(fbResponse == null || fbResponse.results == null ||fbResponse.results.length == 0)
-					message.channel.send("Mathe onomata seiron kathister!");
-				else
-					message.channel.send("https://image.tmdb.org/t/p/w640" + fbResponse.results[0].poster_path);
-			});
-
-		}).on('error', function(e){
-		  console.log("Got an error: ", e);
+		getTvShow(query, function(tvObj)
+		{
+			if(tvObj == null)
+				message.channel.send("Mathe onomata seiron kathister!");
+			else
+				message.channel.send("https://image.tmdb.org/t/p/w640" + tvObj.poster_path);
 		});
    //}
    //catch(e)
@@ -130,19 +113,27 @@ client.on("message", function(message){
   // }
   }
   
-  if(command === "tv_test") {
+  if(command === "tv_description") {
     // Get imdb score for args[1]
    // const m = await message.channel.send("Ping?");
    // m.edit(`Pong! Latency is ${m.createdTimestamp - message.createdTimestamp}ms. API Latency is ${Math.round(client.ping)}ms`);
   // try
   // {
-	   var url = 'https://api.themoviedb.org/3/search/tv?api_key=0390a02f871031ab64e5716275c2d061&query=';
+	   //var url = 'https://api.themoviedb.org/3/search/tv?api_key=0390a02f871031ab64e5716275c2d061&query=';
 		
 		const query = args.join(" ");
 		
+		getTvShow(query, function(tvObj)
+		{
+			if(tvObj == null)
+				message.channel.send("Mathe onomata seiron kathister!");
+			else
+				message.channel.send(query + ": " + tvObj.overview);
+		});
+		
 		//var http = require('https');
 		
-		http.get(url + query, function(res){
+		/*http.get(url + query, function(res){
 			var body = '';
 
 			res.on('data', function(chunk){
@@ -161,7 +152,8 @@ client.on("message", function(message){
 
 		}).on('error', function(e){
 		  console.log("Got an error: ", e);
-		});
+		});*/
+		
    //}
    //catch(e)
   // {
@@ -169,11 +161,11 @@ client.on("message", function(message){
   // }
   }
   
-  if(command === "test") {
+  if(command === "tv_ratings") {
 	  
 //	pool.connect();
 	
-	var sql = "select utsr.user, utsr.rating, utsr.tvshowid from public.usertvshowratings as utsr inner join public.tvshows ts on ts.id = utsr.tvshowid where ts.name = '" + args.join(" ") + "'"; 
+	var sql = "select utsr.user, utsr.rating, utsr.tvshowid from public.usertvshowratings as utsr inner join public.tvshows ts on ts.id = utsr.tvshowid where ts.name = lower('" + args.join(" ") + "')"; 
 	
 	pg.connect(conString, function (err, client, done) {
 	  if (err) {
@@ -198,7 +190,90 @@ client.on("message", function(message){
 		message.channel.send(msg);
 	  });
 	});
+  }
+	if(command === "tv_rate") {
 	
+		const rate = args.shift();
+		
+		const showName = args.join(" ");
+		
+		if(rate === "help")
+		{
+			message.channel.send("rate_tv rating tvshow \nExample: rate_tv 1 Band of Brothers");
+			return;
+		}
+		
+		getTvShow(showName, function(tvObj)
+		{
+			if(tvObj == null)
+				message.channel.send("Mathe onomata seiron kathister!");
+			else
+			{
+				
+				var sql = "INSERT INTO usertvshowratings(tvshowid, rating, \"user\") VALUES ((select ts.id from public.tvshows ts where ts.name = lower('" + showName + "')), "+ rate + ",'" + message.author.username + "')ON CONFLICT on constraint showrating_pk  DO UPDATE SET rating = " + rate;
+				
+				pg.connect(conString, function (err, client, done) {
+				  if (err) {
+					return console.error('error fetching client from pool', err)
+				  }
+				  client.query(sql,  function (err, result) {
+					done()
+					
+					var msg = "";
+					
+					if (err) {
+					  return message.channel.send("Please add movie first or kathister developer ton paizei WutFace .\nType tv_rate help for more info");
+					}
+					
+					 message.channel.send("Rating added! PogChamp");
+				  });
+				});
+			}
+		});
+		
+	}
+	
+	if(command === "tv_add") {
+	
+		const showName = args.join(" ");
+	
+		if(showName === "help")
+		{
+			message.channel.send("add_tv tvshow \nExample: add_tv Oti na ne");
+			return;
+		}
+		
+		getTvShow(showName, function(tvObj)
+		{
+			if(tvObj == null)
+				message.channel.send("Mathe onomata seiron kathister!");
+			else
+			{
+				
+				const year = tvObj.first_air_date.split("-")[0];
+				
+				var sql = "INSERT INTO tvshows(year, name) VALUES (" + year + ", lower('" + args.join(" ") + "'))";
+				
+				pg.connect(conString, function (err, client, done) {
+				  if (err) {
+					return console.error('error fetching client from pool', err)
+				  }
+				  client.query(sql,  function (err, result) {
+					done()
+					
+					var msg = "";
+					
+					if (err) {
+					  message.channel.send("Movie already exists i kathister developer.\nType tv_add help for more info");
+					  return console.error('error happened during query', err)
+					}
+					
+					 message.channel.send("Movie added! CoolStoryBob");
+				  });
+				});
+			}
+		});
+	}
 	/*pool.connect(conString, function (err, client, done) {
 	  if (err) {
 		return console.error('error fetching client from pool', err)
@@ -238,9 +313,7 @@ client.on("message", function(message){
 		message.channel.send(msg);
 		pgclient.end();
 	});*/
-	  
-  }
-  
+	
   if(command === "reddit_hot") {
     // Get imdb score for args[1]
    // const m = await message.channel.send("Ping?");
@@ -383,4 +456,35 @@ client.on("message", function(message){
 });
 
 client.login(config.token);
-           
+
+
+function getTvShow(name, callback)
+{
+	var url = 'https://api.themoviedb.org/3/search/tv?api_key=0390a02f871031ab64e5716275c2d061&query=';
+	
+	//var http = require('https');
+	
+	var tvObj = null;
+	
+	http.get(url + name, function(res){
+		var body = '';
+
+		res.on('data', function(chunk){
+			body += chunk;
+		});
+
+		res.on('end', function(){
+			
+			var fbResponse = JSON.parse(body);
+			
+			if(fbResponse != null && fbResponse.results != null && fbResponse.results.length > 0)
+				tvObj = fbResponse.results[0];
+			
+			return callback(tvObj);
+		});
+
+	}).on('error', function(e){
+	  console.log("Got an error: ", e);
+	  return callback(tvObj);
+	});
+}          
