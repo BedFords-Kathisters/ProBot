@@ -233,6 +233,54 @@ client.on("message", function(message){
 		
 	}
 	
+	if(command === "tv_list") {
+	
+		var sql = "select name from tvshows";
+		
+		pg.connect(conString, function (err, client, done) {
+			if (err) {
+				return console.error('error fetching client from pool', err)
+			}
+			client.query(sql,  function (err, result) {
+				done()
+			
+				var msg = "";
+				
+				for (var i = 0; i < result.rows.length; i++) {
+				
+					var row = result.rows[i];
+					msg = msg + "\n" + row.name;
+				}
+			
+				message.channel.send(msg);
+			});
+		});
+	}
+	
+	if(command === "tv_myratings") {
+	
+		var sql = "select utsr.rating, ts.name from public.usertvshowratings as utsr inner join public.tvshows ts on ts.id = utsr.tvshowid where utsr.user = '" + message.author.username + "'"; 
+		
+		pg.connect(conString, function (err, client, done) {
+			if (err) {
+				return console.error('error fetching client from pool', err)
+			}
+			client.query(sql,  function (err, result) {
+				done()
+			
+				var msg = "";
+				
+				for (var i = 0; i < result.rows.length; i++) {
+				
+					var row = result.rows[i];
+					msg = msg + "\n" + row.name + ": " + row.rating;
+				}
+			
+				message.channel.send(msg);
+			});
+		});
+	}
+	
 	if(command === "tv_add") {
 	
 		const showName = args.join(" ");
