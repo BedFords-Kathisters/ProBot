@@ -70,6 +70,13 @@ client.on("guildDelete", guild => {
   client.user.setGame(`on ${client.guilds.size} servers`);
 });
 
+client.on('messageReactionAdd', (reaction, user) => {
+    onReactionEvent(reaction);
+});
+
+client.on('messageReactionRemove', (reaction, user) => {
+    onReactionEvent(reaction);
+});
 
 client.on("message", function(message){
   // This event will run on every single message received, from any channel or DM.
@@ -505,6 +512,49 @@ client.on("message", function(message){
 
 client.login(config.token);
 
+function onReactionEvent(reaction)
+{
+    const message = reaction.message;
+    
+    var thumbsups = message.reactions.find(reaction => reaction.emoji.name === '👍');
+    var thumbdowns = message.reactions.find(reaction => reaction.emoji.name === '👎');
+    
+    var thumbsupsCount = 0;
+    var thumbsdownsCount = 0;
+    
+    if(thumbsups != null)
+        thumbsupsCount = thumbsups.count;
+    
+    if(thumbdowns != null)
+        thumbsdownsCount = thumbdowns.count;
+    
+    //museum id 373458791426949120
+    //quotes id 373458867721469982
+    
+    if(thumbsupsCount - thumbsdownsCount > 1)
+    {
+        client.channels.get("373458867721469982").send({embed: {
+              author: {
+                name: `${message.author.username} said:`,
+                icon_url: message.author.avatarURL ? message.author.avatarURL : undefined
+              },
+              description: message.content
+         }});
+    }
+    else if(thumbsdownsCount - thumbsupsCount > 1)
+    {
+        client.channels.get("373458791426949120").send({embed: {
+              author: {
+                name: `${message.author.username} said:`,
+                icon_url: message.author.avatarURL ? message.author.avatarURL : undefined
+              },
+              description: message.content
+         }});
+    }
+    
+   // message.channel.send("Thumbs up count: " + thumbsupsCount);
+   // message.channel.send("Thumbs down count: " + thumbsdownsCount);
+}
 
 function getTvShow(name, callback)
 {
