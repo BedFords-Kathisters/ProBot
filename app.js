@@ -98,6 +98,9 @@ client.on("message", function(message){
   
   // Let's go with a few common example commands! Feel free to delete or change those.
   
+  if(command === 'alekos')
+	  message.channel.send("alekowz");
+  
   if(command === "tv_poster") {
     // Get imdb score for args[1]
    // const m = await message.channel.send("Ping?");
