@@ -56,7 +56,7 @@ client.on("ready", () => {
   console.log(`ProBot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
   // Example of changing the bot's playing game to something useful. `client.user` is what the
   // docs refer to as the "ClientUser".
-  client.user.setGame(`to pouli mou on ${client.guilds.size} servers`);
+  client.user.setActivity(`to pouli mou on ${client.guilds.size} servers`);
 });
 
 client.on("guildCreate", guild => {
@@ -520,8 +520,8 @@ function onReactionEvent(reaction)
 {
     const message = reaction.message;
     
-    var thumbsups = message.reactions.find(reaction => reaction.emoji.name === '👍');
-    var thumbdowns = message.reactions.find(reaction => reaction.emoji.name === '👎');
+    var thumbsups = message.reactions.cache.find(reaction => reaction.emoji.name === '👍');
+    var thumbdowns = message.reactions.cache.find(reaction => reaction.emoji.name === '👎');
     
     var thumbsupsCount = 0;
     var thumbsdownsCount = 0;
@@ -534,10 +534,10 @@ function onReactionEvent(reaction)
     
     //museum id 373458791426949120
     //quotes id 373458867721469982
-    
+
     if(thumbsupsCount - thumbsdownsCount > 1)
     {
-        client.channels.get("373458867721469982").send({embed: {
+        client.channels.cache.get("373458867721469982").send({embed: {
               author: {
                 name: `${message.author.username} said:`,
                 icon_url: message.author.avatarURL ? message.author.avatarURL : undefined
@@ -547,7 +547,7 @@ function onReactionEvent(reaction)
     }
     else if(thumbsdownsCount - thumbsupsCount > 1)
     {
-        client.channels.get("373458791426949120").send({embed: {
+        client.channels.cache.get("373458791426949120").send({embed: {
               author: {
                 name: `${message.author.username} said:`,
                 icon_url: message.author.avatarURL ? message.author.avatarURL : undefined
