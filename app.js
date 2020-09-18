@@ -36,9 +36,9 @@ app.listen(port, () => {
     console.log('Our app is running on http://localhost:' + port);
 });
 
-setInterval(() => {
+/*setInterval(() => {
   http.get('https://hidden-fjord-17967.herokuapp.com/');
-}, 900000);
+}, 900000);*/
 
 
 var conString = "postgres://cbwklgbnnsanzw:b3240ff3ce3a1fa8308dfb69f1cd926dc4706df601873f5809fb669ec22b4867@ec2-54-235-250-15.compute-1.amazonaws.com:5432/d6d0kjgl9rqcdk?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory";
