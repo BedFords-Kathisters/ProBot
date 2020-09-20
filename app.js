@@ -52,11 +52,14 @@ var pg = require('pg');
 
 
 client.on("ready", () => {
+	
+	
+  var sizeOfGuilds = client.guilds.cache.size;
   // This event will run if the bot starts, and logs in, successfully.
-  console.log(`ProBot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
+  console.log(`ProBot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${sizeOfGuilds} guilds.`); 
   // Example of changing the bot's playing game to something useful. `client.user` is what the
   // docs refer to as the "ClientUser".
-  client.user.setActivity(`to pouli mou on ${client.guilds.size} servers`);
+  client.user.setActivity(`to pouli mou on ${sizeOfGuilds} servers`);
 });
 
 client.on("guildCreate", guild => {
